@@ -161,7 +161,7 @@ footer {
   padding: 5px 7px;
   margin: 3px;
   background: var(--secondary);
-  color: #fff;
+  color: var(--primary);
 }
 
 .select-dropdown,
