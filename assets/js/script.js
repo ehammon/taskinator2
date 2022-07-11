@@ -202,6 +202,7 @@ var taskStatusChangeHandler = function(event) {
     }
 };
 
+
 pageContentEl.addEventListener("click", taskButtonHandler);
 
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
