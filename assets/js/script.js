@@ -54,9 +54,6 @@ var createTaskEl = function(taskDataObj) {
     var listItemEl = document.createElement("li");
     listItemEl.className = "task-item";
 
-    console.log(taskDataObj);
-    console.log(taskDataObj.status);
-
     // add task id as a custom attribute
     listItemEl.setAttribute("data-task-id", taskIdCounter);
 
@@ -173,17 +170,14 @@ var deleteTask = function(taskId) {
 };   
 
 var editTask = function(taskId) {
-    console.log("editing task #" + taskId);
 
     // get task list item element
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
 
     // get content from task name and type
     var taskName = taskSelected.querySelector("h3.task-name").textContent;
-    console.log(taskName);
 
     var taskType = taskSelected.querySelector("span.task-type").textContent;
-    console.log(taskType);
 
     document.querySelector("input[name='task-name']").value = taskName;
     document.querySelector("select[name='task-type']").value = taskType;
@@ -248,8 +242,56 @@ var taskStatusChangeHandler = function(event) {
 
 var saveTasks = function() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
+};
+
+// get task items from local storage
+// converts tasks from the string format back into an array of objects
+// iterates through a task's array and creates task elements on the page from it
+var loadTasks = function() {
+    tasks = localStorage.getItem("tasks", tasks);
+    
+    tasks = JSON.parse(tasks);
+    
+    for (var i=0; i < tasks.length; i++) {
+        tasks[i].id = taskIdCounter; 
+    
+
+        var listItemEl = document.createElement("li");
+        listItemEl.className = "task-item";
+        listItemEl.setAttribute("data-task-id", tasks[i].id);
+
+        var taskInfoEl = document.createElement("div");
+        taskInfoEl.className = "task-info";
+        taskInfoEl.innerHTML = ("<h3 class = 'task-name'>" + tasks[i].name + "</h3> <span class = 'task-type'>" + tasks[i].type + "</span>");
+
+        listItemEl.appendChild(taskInfoEl);
+        
+        var taskActionsEl = createTaskActions(tasks[i].id) 
+            listItemEl.appendChild(taskActionsEl);
+        
+
+        if (tasks[i].status === "to do") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = "0"
+            listItemEl.appendChild(tasksToDoEl);
+        } else if (tasks[i].status === "in progress") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = "1"
+            listItemEl.appendChild(tasksInProgressEl);
+        } else if (tasks[i].status === "complete") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = "2"
+            listItemEl.appendChild(tasksCompletedEl);
+        }
+
+        taskIdCounter++
+
+        console.log(listItemEl);
+
+// the way the above code is written now, the console shows correct, but the CSS is screwed up for tasks to do
+    }
+
 }
 
 pageContentEl.addEventListener("click", taskButtonHandler);
 
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+
+loadTasks();
